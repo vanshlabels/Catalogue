@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vansh Labels — Product Catalogue</title>
+<style>
+  :root{
+    --navy:#0f1730;
+    --navy-2:#182449;
+    --red:#e0263a;
+    --gold:#e8b04b;
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --line:#e6e8ee;
+    --ink:#151823;
+    --muted:#666c7d;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  a{color:inherit;}
+
+  .topbar{background:var(--navy);color:#fff;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px;}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;flex-wrap:wrap;gap:14px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand img{height:46px;background:#fff;border-radius:8px;padding:6px 10px;}
+  .topbar-actions{display:flex;gap:10px;align-items:center;}
+  .btn{border:none;cursor:pointer;font-size:12.5px;font-weight:700;border-radius:8px;padding:10px 18px;transition:opacity .15s,transform .1s;}
+  .btn:active{transform:scale(.97);}
+  .btn-red{background:var(--red);color:#fff;}
+  .btn-red:hover{opacity:.9;}
+  .btn-line{background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;}
+  .btn-line:hover{background:rgba(255,255,255,.1);}
+  .btn-navy{background:var(--navy);color:#fff;}
+
+  .hero{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 65%,#22305e 100%);color:#fff;padding:54px 0 46px;}
+  .hero h1{font-size:clamp(30px,4vw,46px);font-weight:800;line-height:1.1;margin:0 0 14px;max-width:640px;}
+  .hero h1 span{color:var(--gold);}
+  .hero p{font-size:15.5px;color:#c3c8e0;max-width:520px;line-height:1.65;margin:0 0 26px;}
+  .search-row{display:flex;gap:10px;max-width:520px;flex-wrap:wrap;}
+  .search-row input{
+    flex:1;min-width:220px;padding:13px 18px;border-radius:10px;border:none;font-size:14px;outline:none;
+  }
+  .why-strip{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:30px;}
+  .why-strip span{font-size:12.5px;color:#dfe2f0;display:flex;align-items:center;gap:8px;}
+  .why-strip span::before{content:'✓';color:var(--gold);font-weight:700;}
+
+  .filter-bar{
+    position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+    padding:14px 0;
+  }
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto;padding:8px 16px;border-radius:100px;font-size:12.5px;font-weight:700;
+    background:var(--bg);color:var(--muted);cursor:pointer;border:1px solid var(--line);white-space:nowrap;
+  }
+  .chip:hover{border-color:var(--navy);}
+  .chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  main{padding:36px 0 70px;}
+  .section-title{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:30px 0 16px;display:flex;align-items:center;gap:10px;}
+  .section-title .line{flex:1;height:1px;background:var(--line);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+  .card{
+    background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line);
+    transition:transform .18s, box-shadow .18s;display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(15,23,48,.12);}
+  .card .thumb{aspect-ratio:4/3;overflow:hidden;position:relative;background:#eef0f5;}
+  .card .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .card .thumb .badge{
+    position:absolute;top:10px;left:10px;background:rgba(15,23,48,.82);color:#fff;font-size:10.5px;
+    padding:4px 10px;border-radius:100px;font-weight:600;
+  }
+  .card .thumb .imgbtn{position:absolute;bottom:8px;right:8px;}
+  .card .body{padding:16px 16px 18px;flex:1;display:flex;flex-direction:column;}
+  .card .pname{font-size:15px;font-weight:700;margin:0 0 6px;}
+  .card .pdesc{font-size:13px;color:var(--muted);line-height:1.55;margin:0;flex:1;}
+  .card .admin-row{display:flex;gap:12px;margin-top:12px;}
+  .card .admin-row button{background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:0;}
+  .card .admin-row button:hover{color:var(--red);}
+
+  .cat-card-header{
+    display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:18px 20px;margin-top:34px;margin-bottom:16px;
+  }
+  .cat-card-header img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:#eef0f5;}
+  .cat-icon-tile{width:64px;height:64px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+  .cat-card-header .info h3{margin:0 0 4px;font-size:18px;}
+  .cat-card-header .info p{margin:0;font-size:12.5px;color:var(--muted);max-width:600px;line-height:1.5;}
+  .cat-card-header .admin-actions{margin-left:auto;display:flex;gap:10px;flex:0 0 auto;}
+  .cat-card-header .admin-actions button{font-size:11px;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer;color:var(--muted);}
+  .cat-card-header .admin-actions button:hover{border-color:var(--navy);color:var(--navy);}
+
+  .add-card{
+    border:2px dashed var(--line);border-radius:14px;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);cursor:pointer;font-weight:700;font-size:13px;min-height:160px;
+  }
+  .add-card:hover{border-color:var(--red);color:var(--red);}
+  .add-cat-cta{text-align:center;padding:20px 0 6px;}
+
+  footer{background:var(--navy);color:#c3c8e0;padding:36px 0;margin-top:40px;}
+  .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px;}
+  .foot-row .brandline{font-weight:700;color:#fff;}
+  .foot-note{font-size:11.5px;color:#8891ae;margin-top:14px;}
+  .admin-fab-bar{
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
+    padding:10px 18px;border-radius:100px;display:flex;gap:14px;align-items:center;font-size:12.5px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:60;
+  }
+  .empty-state{padding:70px 20px;text-align:center;color:var(--muted);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Vansh Labels Catalogue — shared core logic ===== */
+const BUNDLE = {"data": {"categories": [{"id": "hang-tags", "name": "Hang Tags", "img": "", "desc": "Elevate your brand's presence with our impeccably designed hang tags. Meticulously crafted with premium materials, they embody quality and durability, blending creativity with professionalism across clothing and accessories.", "uses": ["Product identification", "Pricing & promotions", "Branding & marketing", "Care instructions", "Product details & specifications"], "products": [{"name": "Matte Lamination", "desc": "Ultra-designer looks that focus on minute details \u2014 smoothness and roughness, both at once.", "id": "hang-tags__matte-lamination"}, {"name": "Drip-Off", "desc": "Plain, butter-y smoothness with glimpses of fancy raised designs to embark your brand's awareness.", "id": "hang-tags__drip-off"}, {"name": "Velvet Lamination", "desc": "Soft, light and attractive \u2014 a velvety finish available in a variety of styles.", "id": "hang-tags__velvet-lamination"}, {"name": "Foiling", "desc": "All that glitters can be gold. Amaze customers with shiny foiled cuts around your tags.", "id": "hang-tags__foiling"}, {"name": "UV Lamination", "desc": "Gives your logo and brand name a 3D look and enhances your brand image.", "id": "hang-tags__uv-lamination"}], "color": "#e0263a"}, {"id": "pu-labels", "name": "P.U. Labels", "img": "", "desc": "P.U. (Polyurethane) Labels are extremely durable, flexible and finished to a high quality, made using a heat-and-pressure technique that ensures a long-lasting bond with the fabric.", "uses": ["Branding & logos", "Care information", "Size & style information", "Customization", "Decoration"], "products": [{"name": "Printed P.U.", "desc": "Simple, rough textures with a splash of vintage colour for a royal look.", "id": "pu-labels__printed-p-u"}, {"name": "Embossed P.U.", "desc": "A touch of smoothness with exotic colours and new-age styles to position your brand.", "id": "pu-labels__embossed-p-u"}, {"name": "Digital P.U.", "desc": "An ocean of designs beneath the brand identity to showcase its diversity.", "id": "pu-labels__digital-p-u"}], "color": "#1f6feb"}, {"id": "non-tearable", "name": "Non-Tearable Labels", "img": "", "desc": "Durable, water-resistant labels made from synthetic materials like polyester or polypropylene. Designed to resist tearing, wear and harsh conditions \u2014 ideal for packaging, logistics and asset tagging.", "uses": ["Back patches on jeans", "Durable wash-care labels for denim", "Authenticity & brand verification tags"], "products": [{"name": "Paper Based", "desc": "A cost-effective non-tearable option with a clean, paper-like finish.", "id": "non-tearable__paper-based"}, {"name": "PVC Based", "desc": "Extra-durable PVC construction built to withstand tough handling.", "id": "non-tearable__pvc-based"}, {"name": "With Foiling", "desc": "Non-tearable labels finished with a metallic foil accent for a premium look.", "id": "non-tearable__with-foiling"}], "color": "#1a936f"}, {"id": "woven-labels", "name": "Woven Labels", "img": "", "desc": "Personalized signatures for your creations. Crafted from soft, durable materials that are gentle on the skin and won't fade, in a variety of designs and colours to match your creative vision.", "uses": ["Product identification", "Branding", "Care instructions"], "products": [{"name": "Damask Woven Labels", "desc": "Dense fabric woven together to give the most premium touch, with a net-type finish.", "id": "woven-labels__damask-woven-labels"}, {"name": "Flat Woven Labels", "desc": "Comparatively thinner and sleeker, indulging well with your brand to amplify it.", "id": "woven-labels__flat-woven-labels"}, {"name": "ID Woven Labels", "desc": "Woven identification labels finished with a net-type back side.", "id": "woven-labels__id-woven-labels"}], "color": "#6c4fd6"}, {"id": "satin-labels", "name": "Satin Labels", "img": "", "desc": "Premium, soft and durable fabric labels that add a touch of elegance to your products. A smooth finish and vibrant print make sure your brand stands out, gentle enough for sensitive fabrics.", "uses": ["Brand identity", "Care instructions", "Durability"], "products": [{"name": "Hang Cut Satin Labels", "desc": "Satin labels finished with a clean hang-cut edge.", "id": "satin-labels__hang-cut-satin-labels"}, {"name": "Satin Garment Labels", "desc": "Soft, sew-in satin labels for garments and accessories.", "id": "satin-labels__satin-garment-labels"}, {"name": "Packing Ribbon / Tape", "desc": "Satin ribbon and packing tape to match your brand's finishing touch.", "id": "satin-labels__packing-ribbon-tape"}], "color": "#c9971f"}, {"id": "heat-transfer", "name": "Heat Transfer Labels", "img": "", "desc": "Magic stickers that bring life to clothes and accessories. With a gentle touch of heat, these labels transform into vibrant designs that stick around for a long time.", "uses": ["Product identification", "Promotions", "Branding & marketing", "Customization"], "products": [{"name": "On Jeans", "desc": "Heat transfer labels engineered to bond cleanly to denim, front and back.", "id": "heat-transfer__on-jeans"}, {"name": "On Cotton", "desc": "Vibrant, long-lasting transfers finished for smooth cotton fabric.", "id": "heat-transfer__on-cotton"}, {"name": "On Silk", "desc": "A delicate heat-transfer finish suited to fine silk fabrics.", "id": "heat-transfer__on-silk"}, {"name": "Stickers", "desc": "Standalone heat-applied stickers for quick, flexible branding.", "id": "heat-transfer__stickers"}], "color": "#d9622b"}, {"id": "tpu-labels", "name": "TPU Labels", "img": "", "desc": "TPU (Thermoplastic Polyurethane) labels are known for exceptional durability, flexibility and resistance to wear. Vibrant, long-lasting colours stay smooth even after prolonged use \u2014 resistant to heat, chemicals and abrasion.", "uses": ["Product identification", "Promotions", "Branding & marketing"], "products": [{"name": "TPU Labels", "desc": "Soft, flexible texture with a premium finish, available in multiple thicknesses \u2014 ideal for sportswear, outdoor gear and denim.", "id": "tpu-labels__tpu-labels"}], "color": "#0f9aa4"}, {"id": "cotton-twill", "name": "Cotton Twill Labels", "img": "", "desc": "Made from 100% cotton fabric for a natural, eco-friendly option for branding. A distinctive diagonal weave adds strength and visual appeal, staying smooth and vibrant wash after wash.", "uses": ["Premium clothing branding", "Eco-friendly fashion labels", "High-quality denim & outerwear labels"], "products": [{"name": "Cotton Twill Labels", "desc": "Eco-friendly, durable fabric labels with a diagonal weave for a rustic, natural look.", "id": "cotton-twill__cotton-twill-labels"}, {"name": "Soft Cotton Twill Labels", "desc": "Breathable tags with a smooth texture, offering premium comfort for sustainable or handmade products.", "id": "cotton-twill__soft-cotton-twill-labels"}], "color": "#8a6c46"}], "whyChoose": ["Time-to-Time Delivery", "Top-Quality Raw Material", "Customization Option", "Price worth the Product", "Great After-Sale Service", "Many more services & products available"], "contact": {"phone": "+91 98676 61188", "email": "vanshlabel1234@gmail.com", "website": "vanshlabels.in"}}, "images": {}, "logo": "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"};
+const IMG = (key) => {
+  if (!key) return '';
+  if (key.startsWith('data:')) return key;
+  return '';
+};
+
+function tagIconSVG() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:38%;height:38%;">
+    <path d="M20.59 13.41 12 22 2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/>
+    <circle cx="7" cy="7" r="1.4" fill="#fff" stroke="none"/>
+  </svg>`;
+}
+const LOGO_SRC = 'data:image/png;base64,' + BUNDLE.logo;
+const STORAGE_KEY = 'vansh_catalog_v1';
+const EDIT_CODE = 'vansh123';
+
+let state = {
+  data: null,
+  isAdmin: false,
+  activeCategory: 'all',
+  query: ''
+};
+
+function cloneDefault() {
+  return JSON.parse(JSON.stringify(BUNDLE.data));
+}
+
+function uid(prefix) {
+  return prefix + '_' + Math.random().toString(36).slice(2, 9);
+}
+
+async function loadData() {
+  try {
+    const res = await window.storage.get(STORAGE_KEY, true);
+    if (res && res.value) {
+      state.data = JSON.parse(res.value);
+      return;
+    }
+  } catch (e) {
+    /* key not found yet — fall back to defaults */
+  }
+  state.data = cloneDefault();
+}
+
+async function saveData() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state.data), true);
+  } catch (e) {
+    console.error('Could not save catalogue changes', e);
+    alert('Sorry — your change could not be saved. Please try again.');
+  }
+}
+
+function findCategory(catId) {
+  return state.data.categories.find(c => c.id === catId);
+}
+
+function enterAdmin() {
+  const code = prompt('Enter the catalogue edit code to make changes:');
+  if (code === null) return;
+  if (code.trim() === EDIT_CODE) {
+    state.isAdmin = true;
+    render();
+  } else {
+    alert('That code is not correct.');
+  }
+}
+
+function exitAdmin() {
+  state.isAdmin = false;
+  render();
+}
+
+async function resetCatalog() {
+  if (!confirm('Reset the entire catalogue back to the original Vansh Labels content? This cannot be undone.')) return;
+  state.data = cloneDefault();
+  await saveData();
+  render();
+}
+
+/* ---------- Category CRUD ---------- */
+async function addCategory() {
+  const name = prompt('New category name (e.g. "Care Labels"):');
+  if (!name || !name.trim()) return;
+  const desc = prompt('Short description of this category:', '') || '';
+  state.data.categories.push({
+    id: uid('cat'),
+    name: name.trim(),
+    img: '',
+    desc: desc.trim(),
+    uses: [],
+    products: []
+  });
+  await saveData();
+  render();
+}
+
+async function editCategoryText(catId) {
+  const cat = findCategory(catId);
+  if (!cat) return;
+  const name = prompt('Category name:', cat.name);
+  if (name === null) return;
+  const desc = prompt('Category description:', cat.desc);
+  if (desc === null) return;
+  cat.name = name.trim();
+  cat.desc = desc.trim();
+  await saveData();
+  render();
+}
+
+function editCategoryImage(catId) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const cat = findCategory(catId);
+      cat.img = reader.result;
+      await saveData();
+      render();
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+async function deleteCategory(catId) {
+  const cat = findCategory(catId);
+  if (!cat) return;
+  if (!confirm(`Delete the "${cat.name}" category and all its products?`)) return;
+  state.data.categories = state.data.categories.filter(c => c.id !== catId);
+  if (state.activeCategory === catId) state.activeCategory = 'all';
+  await saveData();
+  render();
+}
+
+/* ---------- Product CRUD ---------- */
+async function addProduct(catId) {
+  const cat = findCategory(catId);
+  if (!cat) return;
+  const name = prompt('New product / variant name:');
+  if (!name || !name.trim()) return;
+  const desc = prompt('Short description:', '') || '';
+  cat.products.push({ id: uid('prod'), name: name.trim(), desc: desc.trim() });
+  await saveData();
+  render();
+}
+
+async function editProduct(catId, prodId) {
+  const cat = findCategory(catId);
+  if (!cat) return;
+  const prod = cat.products.find(p => (p.id || p.name) === prodId);
+  if (!prod) return;
+  const name = prompt('Product name:', prod.name);
+  if (name === null) return;
+  const desc = prompt('Description:', prod.desc);
+  if (desc === null) return;
+  prod.name = name.trim();
+  prod.desc = desc.trim();
+  await saveData();
+  render();
+}
+
+async function deleteProduct(catId, prodId) {
+  const cat = findCategory(catId);
+  if (!cat) return;
+  if (!confirm('Remove this product from the catalogue?')) return;
+  cat.products = cat.products.filter(p => (p.id || p.name) !== prodId);
+  await saveData();
+  render();
+}
+
+async function editContact() {
+  const c = state.data.contact;
+  const phone = prompt('Phone number:', c.phone);
+  if (phone === null) return;
+  const email = prompt('Email address:', c.email);
+  if (email === null) return;
+  const website = prompt('Website:', c.website);
+  if (website === null) return;
+  c.phone = phone.trim();
+  c.email = email.trim();
+  c.website = website.trim();
+  await saveData();
+  render();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : str;
+  return div.innerHTML;
+}
+
+function matchesQuery(cat, q) {
+  if (!q) return true;
+  q = q.toLowerCase();
+  if (cat.name.toLowerCase().includes(q)) return true;
+  if (cat.desc.toLowerCase().includes(q)) return true;
+  return cat.products.some(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+}
+
+async function init() {
+  await loadData();
+  render();
+}
+init();
+
+
+function render() {
+  const app = document.getElementById('app');
+  const d = state.data;
+
+  const cats = d.categories;
+
+  const catsFiltered = state.activeCategory === 'all' ? cats : cats.filter(c=>c.id===state.activeCategory);
+  const q = state.query.trim().toLowerCase();
+
+  const sections = catsFiltered.map(cat => {
+    let products = cat.products;
+    if (q) {
+      const catMatches = cat.name.toLowerCase().includes(q) || cat.desc.toLowerCase().includes(q);
+      products = catMatches ? products : products.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+    }
+    return { cat, products };
+  }).filter(s => q ? s.products.length > 0 : true);
+
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-row">
+          <div class="brand">
+            <img src="${LOGO_SRC}" alt="Vansh Labels">
+          </div>
+          <div class="topbar-actions">
+            ${state.isAdmin
+              ? `<button class="btn btn-line" onclick="resetCatalog()">Reset original</button><button class="btn btn-red" onclick="exitAdmin()">Done editing</button>`
+              : `<button class="btn btn-line" onclick="enterAdmin()">Edit catalogue</button>`}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="wrap">
+        <h1>Every label, tag &amp;<br><span>trim</span> your brand needs.</h1>
+        <p>One stop destination for all your label and tag needs — browse the full Vansh Labels range and get in touch for samples, pricing and orders.</p>
+        <div class="search-row">
+          <input id="searchInput" type="text" placeholder="Search hang tags, woven, satin, TPU…" value="${escapeHtml(state.query)}">
+        </div>
+        <div class="why-strip">
+          ${d.whyChoose.map(w=>`<span>${escapeHtml(w)}</span>`).join('')}
+        </div>
+      </div>
+    </section>
+
+    <div class="filter-bar">
+      <div class="wrap">
+        <div class="chips">
+          <div class="chip ${state.activeCategory==='all'?'active':''}" onclick="setActiveCat('all')">All (${cats.reduce((n,c)=>n+c.products.length,0)})</div>
+          ${cats.map(c=>`<div class="chip ${state.activeCategory===c.id?'active':''}" onclick="setActiveCat('${c.id}')">${escapeHtml(c.name)} (${c.products.length})</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <main class="wrap">
+      ${sections.length ? sections.map(s => renderSection(s.cat, s.products)).join('') : `<div class="empty-state">No products match your search.</div>`}
+      ${state.isAdmin ? `<div class="add-cat-cta"><button class="btn btn-navy" onclick="addCategory()">+ Add new category</button></div>` : ''}
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div class="foot-row">
+          <div class="brandline">Vansh Labels</div>
+          <div>
+            📞 ${escapeHtml(d.contact.phone)} &nbsp; ✉️ ${escapeHtml(d.contact.email)} &nbsp; 🌐 ${escapeHtml(d.contact.website)}
+            ${state.isAdmin ? `<button class="btn btn-line" style="padding:4px 10px;margin-left:10px;" onclick="editContact()">Edit</button>` : ''}
+          </div>
+        </div>
+        <div class="foot-note">This catalogue is for display purposes only — reach out directly for pricing, samples and orders.</div>
+      </div>
+    </footer>
+    ${state.isAdmin ? `<div class="admin-fab-bar">✏️ Editing is on — visible to everyone<button class="btn btn-red" style="padding:6px 14px;" onclick="exitAdmin()">Done</button></div>` : ''}
+  `;
+
+  const input = document.getElementById('searchInput');
+  if (input) input.addEventListener('input', (e)=>{ state.query = e.target.value; render(); });
+}
+
+function renderSection(cat, products) {
+  return `
+    <div id="${cat.id}">
+      <div class="cat-card-header">
+        ${IMG(cat.img)
+          ? `<img src="${IMG(cat.img)}" alt="${escapeHtml(cat.name)}">`
+          : `<div class="cat-icon-tile" style="background:${cat.color || '#334'};">${tagIconSVG()}</div>`}
+        <div class="info">
+          <h3>${escapeHtml(cat.name)}</h3>
+          <p>${escapeHtml(cat.desc)}</p>
+        </div>
+        ${state.isAdmin ? `<div class="admin-actions">
+          <button onclick="editCategoryImage('${cat.id}')">${IMG(cat.img) ? 'Change photo' : 'Add photo'}</button>
+          <button onclick="editCategoryText('${cat.id}')">Edit</button>
+          <button onclick="deleteCategory('${cat.id}')" style="color:#c0263a;">Delete</button>
+        </div>` : ''}
+      </div>
+      <div class="grid">
+        ${products.map(p => `
+          <div class="card">
+            <div class="thumb" style="${IMG(cat.img) ? '' : `background:${cat.color || '#334'};display:flex;align-items:center;justify-content:center;`}">
+              ${IMG(cat.img) ? `<img src="${IMG(cat.img)}" alt="${escapeHtml(p.name)}">` : tagIconSVG()}
+              <div class="badge">${escapeHtml(cat.name)}</div>
+            </div>
+            <div class="body">
+              <p class="pname">${escapeHtml(p.name)}</p>
+              <p class="pdesc">${escapeHtml(p.desc)}</p>
+              ${state.isAdmin ? `<div class="admin-row">
+                <button onclick="editProduct('${cat.id}','${p.id}')">Edit</button>
+                <button onclick="deleteProduct('${cat.id}','${p.id}')">Delete</button>
+              </div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+        ${state.isAdmin ? `<div class="add-card" onclick="addProduct('${cat.id}')">+ Add product</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function setActiveCat(id) {
+  state.activeCategory = id;
+  render();
+}
+</script>
+</body>
+</html>
